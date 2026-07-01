@@ -6,6 +6,18 @@ review comments via the GitHub MCP server.
 
 Model: `claude-opus-4-8`. Toolset: `agent_toolset_20260401` + GitHub MCP.
 
+> **Scripted setup:** `scripts/setup.sh`, `scripts/add_github_credential.sh`, and
+> `scripts/smoke_test.py` automate the manual `ant`/SDK steps below. They
+> require the `ant` CLI (setup/credential) and the `anthropic` Python package
+> (smoke test) — neither is available in every environment, so the manual
+> commands below remain the reference. Quick path:
+>
+> ```sh
+> scripts/setup.sh --apply                                  # agent + environment + vault
+> GITHUB_MCP_TOKEN=ghp_xxx scripts/add_github_credential.sh  # vault credential (manual rotation — see script header)
+> python scripts/smoke_test.py OWNER/REPO                    # confirms MCP auth + repo access
+> ```
+
 ---
 
 ## One-time setup

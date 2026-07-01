@@ -1,0 +1,5 @@
+# Workspace-specific Managed Agents resource IDs (written by scripts/setup.sh --apply)
+.managed-agents.env
+
+__pycache__/
+*.pyc
