@@ -6,6 +6,18 @@ review comments via the GitHub MCP server.
 
 Model: `claude-opus-4-8`. Toolset: `agent_toolset_20260401` + GitHub MCP.
 
+> **Scripted setup:** `scripts/setup.sh`, `scripts/add_github_credential.sh`, and
+> `scripts/smoke_test.py` automate the manual `ant`/SDK steps below. They
+> require the `ant` CLI (setup/credential) and the `anthropic` Python package
+> (smoke test) — neither is available in every environment, so the manual
+> commands below remain the reference. Quick path:
+>
+> ```sh
+> scripts/setup.sh --apply                                  # agent + environment + vault
+> GITHUB_MCP_TOKEN=ghp_xxx scripts/add_github_credential.sh  # vault credential (manual rotation — see script header)
+> python scripts/smoke_test.py OWNER/REPO                    # confirms MCP auth + repo access
+> ```
+
 ---
 
 ## One-time setup
@@ -95,14 +107,22 @@ to post them.
 
 ---
 
-## Open follow-ups (from the plan)
+## Decided defaults
 
-1. **One repo or any repo?** The system prompt is currently repo-agnostic. If
-   this agent is scoped to a single repo, mount it via a `github_repository`
-   session resource so the agent doesn't need to `git clone` at runtime.
-2. **Autonomous posting?** Default is *always ask*. Loosen with a system-prompt
-   edit + a `sessions.update()` if the agent should post without confirmation
-   on trusted repos.
-3. **Language-specific guidance?** For a Python-only or Go-only shop, add a
-   short language block to the system prompt with the common failure modes to
-   watch for (`err != nil` gaps, goroutine leaks, missing `defer`, etc.).
+1. **Repo scope: generic.** No target repo has been named yet, so the system
+   prompt stays repo-agnostic (works against whatever `OWNER/REPO` is passed
+   in the kickoff). If this agent ends up scoped to one repo, mount it via a
+   `github_repository` session resource instead so the agent doesn't need to
+   `git clone` at runtime.
+2. **Posting: always ask.** The system prompt already says "Only post
+   comments when the user has explicitly asked you to post." To loosen this
+   for trusted repos, edit the system prompt and push the change with
+   `sessions.update()` (or a new agent version).
+
+## Still open
+
+3. **Language-specific guidance?** Genuinely blocked on a real target
+   repo — there's no language to write guidance for yet. Once one is named,
+   add a short language block to the system prompt with the common failure
+   modes to watch for (e.g. `err != nil` gaps and goroutine leaks for Go,
+   missing `await`/unhandled promise rejections for JS/TS).
